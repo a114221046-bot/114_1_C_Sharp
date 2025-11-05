@@ -1,0 +1,63 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Fuel_Economy_with_TryParse
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void calculateButton_Click(object sender, EventArgs e)
+        {
+            // 使用者按下「計算 MPG」按鈕時會執行此方法
+            // 我們會使用 double.TryParse 來解析使用者在兩個文字方塊中輸入的值
+            // 這樣可以避免輸入非數值時拋出例外，並提供友善的錯誤提示
+
+            // 宣告變數以儲存解析後的數值
+            double miles;   // 行駛英里數
+            double gallons; // 使用的油量（加侖）
+
+            // 嘗試解析 milesTextBox 以及 gallonsTextBox 的內容
+            // 若兩者皆成功解析為 double，則進行計算；否則顯示錯誤訊息
+            if (double.TryParse(milesTextBox.Text, out miles) &&
+                double.TryParse(gallonsTextBox.Text, out gallons))
+            {
+                // 解析成功，接著檢查油量是否為零，以避免除以零的例外情況
+                if (gallons != 0)
+                {
+                    // 執行 MPG 的計算（英里 / 加侖），並格式化為小數點後兩位
+                    double mpg = miles / gallons;
+                    mpgLabel.Text = mpg.ToString("F2");
+                }
+                else
+                {
+                    // 油量為零時提供使用者友善的警告，並清除結果顯示
+                    MessageBox.Show("油量不可為零。請輸入有效的油量。", "輸入錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    mpgLabel.Text = string.Empty;
+                }
+            }
+            else
+            {
+                // 解析失敗：說明輸入需為數字，並清除結果顯示
+                MessageBox.Show("請輸入有效的數值（數字），例如 123.45。", "輸入錯誤", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                mpgLabel.Text = string.Empty;
+            }
+        }
+
+        private void exitButton_Click(object sender, EventArgs e)
+        {
+            // 關閉表單
+            this.Close();
+        }
+    }
+}
