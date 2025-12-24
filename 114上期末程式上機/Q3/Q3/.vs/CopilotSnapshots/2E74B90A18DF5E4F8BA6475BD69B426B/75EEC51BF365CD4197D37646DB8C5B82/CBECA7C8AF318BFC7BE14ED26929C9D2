@@ -1,0 +1,90 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
+
+namespace Q3
+{
+    public partial class Form1 : Form
+    {
+        private Random rnd = new Random();
+        private List<int> myNumbers = new List<int>();
+        private List<int> winningNumbers = new List<int>();
+
+        public Form1()
+        {
+            InitializeComponent();
+            // initialize displayed numbers from labels
+            myNumbers = new List<int> { 40, 21, 23, 33, 47 };
+            UpdateNumberLabels();
+        }
+
+        private void UpdateNumberLabels()
+        {
+            lblNum1.Text = myNumbers.Count > 0 ? myNumbers[0].ToString() : "";
+            lblNum2.Text = myNumbers.Count > 1 ? myNumbers[1].ToString() : "";
+            lblNum3.Text = myNumbers.Count > 2 ? myNumbers[2].ToString() : "";
+            lblNum4.Text = myNumbers.Count > 3 ? myNumbers[3].ToString() : "";
+            lblNum5.Text = myNumbers.Count > 4 ? myNumbers[4].ToString() : "";
+        }
+
+        private void btnGenerate_Click(object sender, EventArgs e)
+        {
+            // generate 5 unique numbers between 1 and 49
+            myNumbers.Clear();
+            while (myNumbers.Count < 5)
+            {
+                int n = rnd.Next(1, 50);
+                if (!myNumbers.Contains(n)) myNumbers.Add(n);
+            }
+            myNumbers.Sort();
+            UpdateNumberLabels();
+            lstLog.Items.Clear();
+            lstLog.Items.Add("本期開獎號碼：");
+            for (int i = 0; i < myNumbers.Count; i++)
+            {
+                lstLog.Items.Add($"第{i+1}個號碼: {myNumbers[i]}");
+            }
+            lblMatchCount.Text = "中0個號碼";
+            lblPrize.Text = "沒中獎";
+        }
+
+        private void btnDraw_Click(object sender, EventArgs e)
+        {
+            // generate 4 unique winning numbers between 1 and 49
+            winningNumbers.Clear();
+            while (winningNumbers.Count < 4)
+            {
+                int n = rnd.Next(1, 50);
+                if (!winningNumbers.Contains(n)) winningNumbers.Add(n);
+            }
+            winningNumbers.Sort();
+
+            // display winning numbers in the listbox
+            lstLog.Items.Clear();
+            lstLog.Items.Add("本期開獎號碼：");
+            for (int i = 0; i < winningNumbers.Count; i++)
+            {
+                lstLog.Items.Add($"第{i+1}個號碼: {winningNumbers[i]}");
+            }
+
+            // compare
+            int match = myNumbers.Intersect(winningNumbers).Count();
+            lblMatchCount.Text = $"中{match}個號碼";
+            if (match >= 3)
+            {
+                lblPrize.Text = "恭喜中獎";
+            }
+            else
+            {
+                lblPrize.Text = "沒中獎";
+            }
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+    }
+}

@@ -1,0 +1,122 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace Q1
+{
+    public partial class Form1 : Form
+    {
+        private enum Choice { Stone = 0, Paper = 1, Scissor = 2 }
+        private Random rnd = new Random();
+        private int playerWins = 0;
+        private int computerWins = 0;
+
+        public Form1()
+        {
+            InitializeComponent();
+
+            // 註冊按鈕事件
+            this.StoneButton.Click += StoneButton_Click;
+            this.paperButton.Click += PaperButton_Click;
+            this.scissorButton.Click += ScissorButton_Click;
+            this.exitButton.Click += ExitButton_Click;
+        }
+
+        private void PlayRound(Choice playerChoice)
+        {
+            // 顯示玩家出
+            switch (playerChoice)
+            {
+                case Choice.Stone:
+                    PlayerpictureBox.Image = Properties.Resources.stone_player;
+                    break;
+                case Choice.Paper:
+                    PlayerpictureBox.Image = Properties.Resources.paper_player;
+                    break;
+                case Choice.Scissor:
+                    PlayerpictureBox.Image = Properties.Resources.scissor_player;
+                    break;
+            }
+
+            // 電腦隨機選擇
+            Choice computerChoice = (Choice)rnd.Next(0, 3);
+            switch (computerChoice)
+            {
+                case Choice.Stone:
+                    // 沒有專屬 stone_computer 圖檔，使用現有 stone_player 當作石頭圖示
+                    ComputerpictureBox.Image = Properties.Resources.stone_player;
+                    break;
+                case Choice.Paper:
+                    ComputerpictureBox.Image = Properties.Resources.paper_computer;
+                    break;
+                case Choice.Scissor:
+                    ComputerpictureBox.Image = Properties.Resources.scissor_computer;
+                    break;
+            }
+
+            // 判斷勝負
+            string roundResult;
+            if (playerChoice == computerChoice)
+            {
+                roundResult = "平手";
+            }
+            else if ((playerChoice == Choice.Stone && computerChoice == Choice.Scissor) ||
+                     (playerChoice == Choice.Paper && computerChoice == Choice.Stone) ||
+                     (playerChoice == Choice.Scissor && computerChoice == Choice.Paper))
+            {
+                playerWins++;
+                roundResult = "玩家獲勝";
+            }
+            else
+            {
+                computerWins++;
+                roundResult = "電腦獲勝";
+            }
+
+            // 更新結果顯示
+            resultLabel.Text = string.Format("{0}！玩家: {1} 勝, 電腦: {2} 勝", roundResult, playerWins, computerWins);
+        }
+
+        private void StoneButton_Click(object sender, EventArgs e)
+        {
+            PlayRound(Choice.Stone);
+        }
+
+        private void PaperButton_Click(object sender, EventArgs e)
+        {
+            PlayRound(Choice.Paper);
+        }
+
+        private void ScissorButton_Click(object sender, EventArgs e)
+        {
+            PlayRound(Choice.Scissor);
+        }
+
+        private void ExitButton_Click(object sender, EventArgs e)
+        {
+            string message = string.Format("遊戲結束\n玩家勝場: {0}\n電腦勝場: {1}", playerWins, computerWins);
+            MessageBox.Show(message, "統計結果", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Close();
+        }
+
+        private void ComputerpictureBox_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        // 新增缺少的 resultLabel_Click 事件處理器，對應 Designer 的事件綁定
+        private void resultLabel_Click(object sender, EventArgs e)
+        {
+            // 可留空或顯示目前統計
+            // 這裡選擇顯示簡短統計
+            string msg = string.Format("目前統計\n玩家: {0} 勝\n電腦: {1} 勝", playerWins, computerWins);
+            MessageBox.Show(msg, "統計", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    }
+}
